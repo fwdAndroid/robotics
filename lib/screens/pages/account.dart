@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robotics/screens/setting/change_language.dart';
 import 'package:robotics/screens/setting/edit_profile.dart';
 import 'package:robotics/service/auth_service.dart';
 import 'package:share_plus/share_plus.dart';
@@ -60,10 +61,10 @@ class _AccountState extends State<Account> {
             padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
             child: ListTile(
               onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (builder) => ChangeLangage()),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (builder) => ChangeLangage()),
+                );
               },
               trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
               title: Text(
