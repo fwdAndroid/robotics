@@ -38,7 +38,7 @@ class _MainDashboardState extends State<MainDashboard> {
       child: Scaffold(
         body: _screens[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Color(0xff097132),
+          backgroundColor: Colors.blue,
           selectedItemColor: Colors.white,
           selectedLabelStyle: TextStyle(color: Colors.white),
           type: BottomNavigationBarType.fixed,
