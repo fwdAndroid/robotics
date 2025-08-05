@@ -38,9 +38,15 @@ class _EditProfileState extends State<EditProfile> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(centerTitle: true, title: Text("Edit Profile")),
+        appBar: AppBar(
+          backgroundColor: Colors.blue,
+          iconTheme: IconThemeData(color: Colors.white),
+          centerTitle: true,
+          title: Text("Edit Profile", style: TextStyle(color: Colors.white)),
+        ),
         body: Column(
           children: [
+            Image.asset("assets/logo.png", height: 200),
             // Full Name Input
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -58,7 +64,17 @@ class _EditProfileState extends State<EditProfile> {
               child: _isLoading
                   ? Center(child: CircularProgressIndicator(color: Colors.blue))
                   : ElevatedButton(
-                      child: Text("Edit Profile"),
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: const Color(0xff0A5EFE),
+                        fixedSize: const Size(285, 54),
+                      ),
+                      child: Text(
+                        "Edit Profile",
+                        style: TextStyle(color: Colors.white),
+                      ),
                       onPressed: () async {
                         setState(() {
                           _isLoading = true;
