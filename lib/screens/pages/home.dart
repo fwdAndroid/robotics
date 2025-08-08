@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:robotics/screens/chat/video_chat.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,14 +14,31 @@ class _HomeState extends State<Home> {
   final CollectionReference _staffRef = FirebaseFirestore.instance.collection(
     'staff',
   );
+  String? currentUserName;
 
-  void _joinSession(String staffName) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => JoinSessionScreen(staffName: staffName),
-      ),
-    );
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _fetchCurrentUserName();
+  }
+
+  Future<void> _fetchCurrentUserName() async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (userDoc.exists && userDoc.data() != null) {
+        setState(() {
+          currentUserName = userDoc['username'] ?? 'No Name';
+        });
+      }
+    } catch (e) {
+      debugPrint("Error fetching username: $e");
+    }
   }
 
   @override
@@ -66,6 +85,7 @@ class _HomeState extends State<Home> {
               var name = staff['name'] ?? 'No Name';
               var status = staff['status'] ?? 'inactive';
               var profilePic = staff['profileImage'] ?? 'assets/user.png';
+              var staffId = staff['id'];
 
               return Column(
                 children: [
@@ -94,7 +114,20 @@ class _HomeState extends State<Home> {
                     ),
                     trailing: ElevatedButton(
                       onPressed: status == 'active'
-                          ? () => _joinSession(name)
+                          ? () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (builder) => VideoChat(
+                                  staffName: name,
+                                  staffId: staffId,
+                                  userId: FirebaseAuth
+                                      .instance
+                                      .currentUser!
+                                      .uid, // Replace with actual user ID
+                                  userName: currentUserName!,
+                                ),
+                              ),
+                            )
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: status == 'active'
@@ -121,28 +154,6 @@ class _HomeState extends State<Home> {
             },
           );
         },
-      ),
-    );
-  }
-}
-
-class JoinSessionScreen extends StatelessWidget {
-  final String staffName;
-  const JoinSessionScreen({super.key, required this.staffName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Join Session with $staffName"),
-        backgroundColor: const Color(0xff0A5EFE),
-      ),
-      body: Center(
-        child: Text(
-          "Session screen for $staffName will be implemented later.",
-          style: const TextStyle(fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
       ),
     );
   }
