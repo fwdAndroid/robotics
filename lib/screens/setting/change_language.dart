@@ -72,7 +72,7 @@ class _ChangeLangageState extends State<ChangeLangage> {
                 size: 20,
               ),
               title: Text(
-                languageProvider.localizedStrings['French'] ?? "French",
+                languageProvider.localizedStrings['Dutch'] ?? "Dutch",
               ),
             ),
 

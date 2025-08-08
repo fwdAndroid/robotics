@@ -48,8 +48,8 @@ class _MainDashboardState extends State<MainDashboard> {
           },
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.chat, size: 25, color: Color(0xff0A5EFE)),
-              label: "Chat",
+              icon: Icon(Icons.home, size: 25, color: Color(0xff0A5EFE)),
+              label: "Home",
             ),
 
             BottomNavigationBarItem(
