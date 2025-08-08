@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:robotics/screens/pages/account.dart';
 import 'package:robotics/screens/pages/home.dart';
-import 'package:robotics/screens/pages/videocall.dart';
 
 class MainDashboard extends StatefulWidget {
   final int initialPageIndex; // new
@@ -19,7 +18,6 @@ class _MainDashboardState extends State<MainDashboard> {
 
   final List<Widget> _screens = [
     Home(), // Replace with your screen widgets
-    Videocall(),
     Account(),
   ];
   @override
@@ -52,10 +50,6 @@ class _MainDashboardState extends State<MainDashboard> {
             BottomNavigationBarItem(
               icon: Icon(Icons.chat, size: 25, color: Color(0xff0A5EFE)),
               label: "Chat",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.video_call, size: 25, color: Color(0xff0A5EFE)),
-              label: "Video",
             ),
 
             BottomNavigationBarItem(
