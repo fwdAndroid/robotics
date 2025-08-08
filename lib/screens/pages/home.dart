@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:robotics/screens/chat/video_chat.dart';
+import 'package:robotics/screens/provider/language_provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -43,13 +45,16 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         leading: Image.asset("assets/logo.png", height: 50, width: 50),
         automaticallyImplyLeading: false,
         backgroundColor: const Color(0xff0A5EFE),
-        title: const Text(
-          'Online Members',
+        title: Text(
+          languageProvider.localizedStrings['Online Members'] ??
+              'Online Members',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -64,7 +69,12 @@ class _HomeState extends State<Home> {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text("No staff members found"));
+            return Center(
+              child: Text(
+                languageProvider.localizedStrings['No staff members found'] ??
+                    "No staff members found",
+              ),
+            );
           }
 
           var staffList = snapshot.data!.docs;
@@ -138,8 +148,8 @@ class _HomeState extends State<Home> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text(
-                        "Join",
+                      child: Text(
+                        languageProvider.localizedStrings['Join'] ?? "Join",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),

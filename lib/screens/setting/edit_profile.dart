@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:robotics/screens/main_dashboard.dart';
+import 'package:robotics/screens/provider/language_provider.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -36,13 +38,17 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blue,
           iconTheme: IconThemeData(color: Colors.white),
           centerTitle: true,
-          title: Text("Edit Profile", style: TextStyle(color: Colors.white)),
+          title: Text(
+            languageProvider.localizedStrings['Edit Profile'] ?? "Edit Profile",
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: Column(
           children: [
@@ -52,7 +58,10 @@ class _EditProfileState extends State<EditProfile> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: TextFormField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: "Name"),
+                decoration: InputDecoration(
+                  labelText:
+                      languageProvider.localizedStrings['Name'] ?? "Name",
+                ),
               ),
             ),
 
@@ -72,7 +81,8 @@ class _EditProfileState extends State<EditProfile> {
                         fixedSize: const Size(285, 54),
                       ),
                       child: Text(
-                        "Edit Profile",
+                        languageProvider.localizedStrings['Edit Profile'] ??
+                            "Edit Profile",
                         style: TextStyle(color: Colors.white),
                       ),
                       onPressed: () async {
@@ -87,7 +97,11 @@ class _EditProfileState extends State<EditProfile> {
                               .update({"username": nameController.text});
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text("Successfully Updated Profile"),
+                              content: Text(
+                                languageProvider
+                                        .localizedStrings['Successfully Updated Profile'] ??
+                                    "Successfully Updated Profile",
+                              ),
                             ),
                           );
                         } catch (e) {

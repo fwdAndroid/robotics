@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:robotics/screens/auth/login_screen.dart';
+import 'package:robotics/screens/provider/language_provider.dart';
 import 'package:robotics/service/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -51,6 +53,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
       appBar: AppBar(iconTheme: const IconThemeData(color: Colors.black)),
       backgroundColor: Colors.white,
@@ -66,7 +70,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               TextFormField(
                 controller: _usernameController,
-                decoration: const InputDecoration(labelText: "User Name"),
+                decoration: InputDecoration(
+                  labelText:
+                      languageProvider.localizedStrings['User Name'] ??
+                      "User Name",
+                ),
                 validator: (value) =>
                     value!.isEmpty ? "Username is required" : null,
               ),
@@ -84,7 +92,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
-                  labelText: "Password",
+                  labelText:
+                      languageProvider.localizedStrings['Password'] ??
+                      "Password",
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
@@ -117,8 +127,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        "Register",
+                    : Text(
+                        languageProvider.localizedStrings['Register'] ??
+                            "Register",
                         style: TextStyle(color: Colors.white),
                       ),
               ),
@@ -132,12 +143,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     MaterialPageRoute(builder: (_) => const LoginScreen()),
                   );
                 },
-                child: const Text.rich(
+                child: Text.rich(
                   TextSpan(
-                    text: 'Already have an account? ',
+                    text:
+                        languageProvider
+                            .localizedStrings['Already have an account? '] ??
+                        'Already have an account? ',
                     children: [
                       TextSpan(
-                        text: 'Login',
+                        text:
+                            languageProvider.localizedStrings['Login'] ??
+                            'Login',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color(0xff0A5EFE),

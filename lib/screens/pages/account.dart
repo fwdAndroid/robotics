@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:robotics/screens/provider/language_provider.dart';
 import 'package:robotics/screens/setting/change_language.dart';
 import 'package:robotics/screens/setting/edit_profile.dart';
 import 'package:robotics/service/auth_service.dart';
@@ -14,6 +16,8 @@ class Account extends StatefulWidget {
 class _AccountState extends State<Account> {
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -31,32 +35,33 @@ class _AccountState extends State<Account> {
               },
               trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
               title: Text(
-                "Edit Profile",
+                languageProvider.localizedStrings['Edit Profile'] ??
+                    "Edit Profile",
                 style: TextStyle(color: Colors.black),
               ),
               leading: Icon(Icons.person, color: Colors.black),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ListTile(
-              onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (builder) => NotificationSetting(),
-                //   ),
-                // );
-              },
-              trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
-              title: Text(
-                "Notifications",
-                style: TextStyle(color: Colors.black),
-              ),
-              leading: Icon(Icons.notifications, color: Colors.black),
-            ),
-          ),
 
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: ListTile(
+          //     onTap: () {
+          //       // Navigator.push(
+          //       //   context,
+          //       //   MaterialPageRoute(
+          //       //     builder: (builder) => NotificationSetting(),
+          //       //   ),
+          //       // );
+          //     },
+          //     trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
+          //     title: Text(
+          //       "Notifications",
+          //       style: TextStyle(color: Colors.black),
+          //     ),
+          //     leading: Icon(Icons.notifications, color: Colors.black),
+          //   ),
+          // ),
           Padding(
             padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
             child: ListTile(
@@ -68,7 +73,8 @@ class _AccountState extends State<Account> {
               },
               trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
               title: Text(
-                "Change Language",
+                languageProvider.localizedStrings['Change Language'] ??
+                    "Change Language",
                 style: TextStyle(color: Colors.black),
               ),
               leading: Icon(Icons.language, color: Colors.black),
@@ -83,7 +89,8 @@ class _AccountState extends State<Account> {
               },
               trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
               title: Text(
-                "Invite Friends",
+                languageProvider.localizedStrings['Invite Friends'] ??
+                    "Invite Friends",
                 style: TextStyle(color: Colors.black),
               ),
               leading: Icon(Icons.share, color: Colors.black),
@@ -95,11 +102,19 @@ class _AccountState extends State<Account> {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text("Logout"),
-                  content: Text("Are you sure you want to log out?"),
+                  title: Text(
+                    languageProvider.localizedStrings['Logout'] ?? "Logout",
+                  ),
+                  content: Text(
+                    languageProvider
+                            .localizedStrings['Are you sure you want to log out?'] ??
+                        "Are you sure you want to log out?",
+                  ),
                   actions: [
                     TextButton(
-                      child: Text("Cancel"),
+                      child: Text(
+                        languageProvider.localizedStrings['Cancel'] ?? "Cancel",
+                      ),
                       onPressed: () => Navigator.pop(context),
                     ),
                     ElevatedButton(
@@ -112,7 +127,7 @@ class _AccountState extends State<Account> {
                         await FirebaseService().logout();
                       },
                       child: Text(
-                        "Logout",
+                        languageProvider.localizedStrings['Logout'] ?? "Logout",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),

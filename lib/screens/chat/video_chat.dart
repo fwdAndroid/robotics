@@ -38,40 +38,43 @@ class _VideoChatState extends State<VideoChat> {
         .doc(chatRoomId)
         .collection('messages');
 
-    return Stack(
-      children: [
-        SafeArea(
-          child: ZegoUIKitPrebuiltCall(
-            appID: appID,
-            appSign: appSign,
-            userID: widget.userId,
-            userName: widget.userName,
-            callID: widget.callID,
-            config: ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall(),
+    return Scaffold(
+      appBar: AppBar(iconTheme: IconThemeData(color: Colors.white)),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: ZegoUIKitPrebuiltCall(
+              appID: appID,
+              appSign: appSign,
+              userID: widget.userId,
+              userName: widget.userName,
+              callID: widget.callID,
+              config: ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall(),
+            ),
           ),
-        ),
 
-        Positioned(
-          bottom: 30,
-          right: 20,
-          child: FloatingActionButton(
-            backgroundColor: Colors.blueAccent,
-            child: const Icon(Icons.chat_bubble_outline),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ChatScreen(
-                    chatCollection: chatCollection,
-                    currentUserId: widget.userId,
-                    currentUserName: widget.userName,
+          Positioned(
+            bottom: 30,
+            right: 20,
+            child: FloatingActionButton(
+              backgroundColor: Colors.blueAccent,
+              child: const Icon(Icons.chat_bubble_outline),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChatScreen(
+                      chatCollection: chatCollection,
+                      currentUserId: widget.userId,
+                      currentUserName: widget.userName,
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

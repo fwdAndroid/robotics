@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:robotics/screens/provider/language_provider.dart';
 import 'package:robotics/service/auth_service.dart';
 import 'package:robotics/screens/auth/register_screen.dart';
 import 'package:robotics/screens/main_dashboard.dart';
@@ -50,6 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -66,7 +70,10 @@ class _LoginScreenState extends State<LoginScreen> {
               // Email field
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: "Email"),
+                decoration: InputDecoration(
+                  labelText:
+                      languageProvider.localizedStrings['Email'] ?? "Email",
+                ),
                 validator: (value) =>
                     value!.isEmpty ? "Email is required" : null,
               ),
@@ -77,7 +84,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
-                  labelText: "Password",
+                  labelText:
+                      languageProvider.localizedStrings['Password'] ??
+                      "Password",
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
@@ -110,8 +119,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        "Login",
+                    : Text(
+                        languageProvider.localizedStrings['Login'] ?? "Login",
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
               ),
@@ -121,7 +130,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 alignment: Alignment.topRight,
                 child: TextButton(
                   onPressed: _showForgotPasswordDialog,
-                  child: const Text("Forgot Password?"),
+                  child: Text(
+                    languageProvider.localizedStrings['Forgot Password'] ??
+                        "Forgot Password?",
+                  ),
                 ),
               ),
 
@@ -133,12 +145,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     MaterialPageRoute(builder: (_) => const RegisterScreen()),
                   );
                 },
-                child: const Text.rich(
+                child: Text.rich(
                   TextSpan(
-                    text: 'Don’t have an account? ',
+                    text:
+                        languageProvider
+                            .localizedStrings['Don’t have an account? '] ??
+                        'Don’t have an account? ',
                     children: [
                       TextSpan(
-                        text: 'Register',
+                        text:
+                            languageProvider.localizedStrings['Register'] ??
+                            'Register',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color(0xff0A5EFE),

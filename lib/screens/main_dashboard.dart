@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:robotics/screens/pages/account.dart';
 import 'package:robotics/screens/pages/home.dart';
+import 'package:robotics/screens/provider/language_provider.dart';
 
 class MainDashboard extends StatefulWidget {
   final int initialPageIndex; // new
@@ -28,6 +30,9 @@ class _MainDashboardState extends State<MainDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(
+      context,
+    ); // Access the provider
     return WillPopScope(
       onWillPop: () async {
         final shouldPop = await _showExitDialog(context);
@@ -49,11 +54,11 @@ class _MainDashboardState extends State<MainDashboard> {
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.home, size: 25, color: Color(0xff0A5EFE)),
-              label: "Home",
+              label: languageProvider.localizedStrings['Home'] ?? "Home",
             ),
 
             BottomNavigationBarItem(
-              label: "Account",
+              label: languageProvider.localizedStrings['Account'] ?? "Account",
               icon: Icon(Icons.person, size: 25, color: Color(0xff0A5EFE)),
             ),
           ],
