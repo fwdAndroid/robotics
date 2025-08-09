@@ -20,7 +20,6 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _fetchCurrentUserName();
   }
@@ -55,7 +54,7 @@ class _HomeState extends State<Home> {
         title: Text(
           languageProvider.localizedStrings['Online Members'] ??
               'Online Members',
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 22,
@@ -79,13 +78,12 @@ class _HomeState extends State<Home> {
 
           var staffList = snapshot.data!.docs;
 
-          // Sort: Active first, then inactive
+          // Sort: online first, then busy, then offline
           staffList.sort((a, b) {
             String statusA = a['status'] ?? 'inactive';
             String statusB = b['status'] ?? 'inactive';
-            if (statusA == 'active' && statusB != 'active') return -1;
-            if (statusA != 'active' && statusB == 'active') return 1;
-            return 0;
+            List<String> order = ['online', 'busy', 'inactive'];
+            return order.indexOf(statusA).compareTo(order.indexOf(statusB));
           });
 
           return ListView.builder(
@@ -94,16 +92,20 @@ class _HomeState extends State<Home> {
               var staff = staffList[index];
               var name = staff['name'] ?? 'No Name';
               var status = staff['status'] ?? 'inactive';
-              var profilePic = staff['profileImage'] ?? 'assets/user.png';
-              var staffId = staff['id'];
+              var profilePic = staff['profileImage'] ?? '';
+              var staffDocId = staff.id; // actual Firestore document ID
+              var staffId = staff['id']; // your custom staff id field
 
               return Column(
                 children: [
                   ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: profilePic.startsWith('http')
+                      backgroundImage:
+                          (profilePic.isNotEmpty &&
+                              profilePic.startsWith('http'))
                           ? NetworkImage(profilePic)
-                          : AssetImage(profilePic) as ImageProvider,
+                          : const AssetImage('assets/user.png')
+                                as ImageProvider,
                     ),
                     title: Text(
                       name,
@@ -114,34 +116,46 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     subtitle: Text(
-                      status == 'active' ? "🟢 Active now" : "🔴 Offline",
+                      status == 'online'
+                          ? "🟢 Active now"
+                          : status == 'busy'
+                          ? "🟡 Busy"
+                          : "🔴 Offline",
                       style: TextStyle(
                         fontSize: 12,
-                        color: status == 'active'
+                        color: status == 'online'
                             ? Colors.green
+                            : status == 'busy'
+                            ? Colors.yellow[800]
                             : const Color(0xff9A9BB1),
                       ),
                     ),
                     trailing: ElevatedButton(
-                      onPressed: status == 'active'
-                          ? () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (builder) => VideoChat(
-                                  callID: staffId,
-                                  staffName: name,
-                                  staffId: staffId,
-                                  userId: FirebaseAuth
-                                      .instance
-                                      .currentUser!
-                                      .uid, // Replace with actual user ID
-                                  userName: currentUserName!,
+                      onPressed: (status == 'online')
+                          ? () async {
+                              // Change status to busy
+                              await _staffRef.doc(staffDocId).update({
+                                'status': 'busy',
+                              });
+
+                              // Navigate to call screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (builder) => VideoChat(
+                                    callID: staffId,
+                                    staffName: name,
+                                    staffId: staffId,
+                                    userId:
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                    userName: currentUserName ?? 'Guest',
+                                  ),
                                 ),
-                              ),
-                            )
+                              );
+                            }
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: status == 'active'
+                        backgroundColor: status == 'online'
                             ? const Color(0xff0A5EFE)
                             : Colors.grey,
                         shape: RoundedRectangleBorder(
@@ -150,7 +164,7 @@ class _HomeState extends State<Home> {
                       ),
                       child: Text(
                         languageProvider.localizedStrings['Join'] ?? "Join",
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ),

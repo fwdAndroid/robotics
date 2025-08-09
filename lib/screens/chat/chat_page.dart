@@ -12,11 +12,17 @@ class ChatScreen extends StatefulWidget {
   final CollectionReference chatCollection;
   final String currentUserId;
   final String currentUserName;
+  final String chatRoomId;
+  final String staffId;
+  final String staffName;
 
   const ChatScreen({
     super.key,
     required this.chatCollection,
     required this.currentUserId,
+    required this.staffId,
+    required this.staffName,
+    required this.chatRoomId,
     required this.currentUserName,
   });
 
@@ -26,6 +32,8 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController chatController = TextEditingController();
+  bool isUploading = false;
+  double uploadProgress = 0;
 
   Future<void> sendTextMessage(String text) async {
     if (text.trim().isEmpty) return;
@@ -34,6 +42,8 @@ class _ChatScreenState extends State<ChatScreen> {
       'senderName': widget.currentUserName,
       'content': text,
       'timestamp': FieldValue.serverTimestamp(),
+      'staffId': widget.staffId,
+      'staffName': widget.staffName,
       'type': 'text',
     });
   }
@@ -44,18 +54,47 @@ class _ChatScreenState extends State<ChatScreen> {
       File file = File(result.files.single.path!);
       String fileName = result.files.single.name;
 
-      final ref = FirebaseStorage.instance.ref('shared_files/$fileName');
-      await ref.putFile(file);
-      String downloadUrl = await ref.getDownloadURL();
-
-      await widget.chatCollection.add({
-        'senderId': widget.currentUserId,
-        'senderName': widget.currentUserName,
-        'content': downloadUrl,
-        'fileName': fileName,
-        'timestamp': FieldValue.serverTimestamp(),
-        'type': 'file',
+      setState(() {
+        isUploading = true;
+        uploadProgress = 0;
       });
+
+      try {
+        final ref = FirebaseStorage.instance.ref(
+          'shared_files/${widget.chatRoomId}/$fileName',
+        );
+        final uploadTask = ref.putFile(file);
+
+        uploadTask.snapshotEvents.listen((event) {
+          setState(() {
+            uploadProgress = event.bytesTransferred / event.totalBytes;
+          });
+        });
+
+        await uploadTask.whenComplete(() {});
+
+        String downloadUrl = await ref.getDownloadURL();
+
+        await widget.chatCollection.add({
+          'senderId': widget.currentUserId,
+          'senderName': widget.currentUserName,
+          'content': downloadUrl,
+          'fileName': fileName,
+          'timestamp': FieldValue.serverTimestamp(),
+          'type': 'file',
+          'staffId': widget.staffId,
+          'staffName': widget.staffName,
+        });
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
+      } finally {
+        setState(() {
+          isUploading = false;
+          uploadProgress = 0;
+        });
+      }
     }
   }
 
@@ -94,6 +133,15 @@ class _ChatScreenState extends State<ChatScreen> {
     final sender = data['senderName'] ?? 'Unknown';
     final type = data['type'] ?? 'text';
     final content = data['content'] ?? '';
+
+    // Show only messages where sender or staff match current chat participants
+    final senderId = data['senderId'] ?? '';
+    final msgStaffId = data['staffId'] ?? '';
+    if (!((senderId == widget.currentUserId) ||
+        (msgStaffId == widget.staffId))) {
+      return const SizedBox.shrink(); // Hide unrelated messages
+    }
+
     if (type == 'file') {
       final fileName = data['fileName'] ?? 'file';
       return ListTile(
@@ -118,6 +166,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
+          if (isUploading) LinearProgressIndicator(value: uploadProgress),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: widget.chatCollection
@@ -147,7 +196,7 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.attach_file, color: Colors.orange),
-                  onPressed: pickAndShareFile,
+                  onPressed: isUploading ? null : pickAndShareFile,
                 ),
                 Expanded(
                   child: TextField(
@@ -161,14 +210,17 @@ class _ChatScreenState extends State<ChatScreen> {
                       sendTextMessage(val);
                       chatController.clear();
                     },
+                    enabled: !isUploading,
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.send, color: Colors.blue),
-                  onPressed: () {
-                    sendTextMessage(chatController.text);
-                    chatController.clear();
-                  },
+                  onPressed: isUploading
+                      ? null
+                      : () {
+                          sendTextMessage(chatController.text);
+                          chatController.clear();
+                        },
                 ),
               ],
             ),
