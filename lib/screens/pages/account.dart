@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robotics/screens/auth/login_screen.dart';
 import 'package:robotics/screens/provider/language_provider.dart';
 import 'package:robotics/screens/setting/change_language.dart';
 import 'package:robotics/screens/setting/edit_profile.dart';
@@ -99,40 +100,13 @@ class _AccountState extends State<Account> {
 
           TextButton(
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(
-                    languageProvider.localizedStrings['Logout'] ?? "Logout",
-                  ),
-                  content: Text(
-                    languageProvider
-                            .localizedStrings['Are you sure you want to log out?'] ??
-                        "Are you sure you want to log out?",
-                  ),
-                  actions: [
-                    TextButton(
-                      child: Text(
-                        languageProvider.localizedStrings['Cancel'] ?? "Cancel",
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                      onPressed: () async {
-                        Navigator.pop(context); // Close dialog
-
-                        await FirebaseService().logout();
-                      },
-                      child: Text(
-                        languageProvider.localizedStrings['Logout'] ?? "Logout",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
+              FirebaseService().logout();
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text("Logout Succesfully")));
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (builder) => LoginScreen()),
               );
             },
             child: Text("Logout", style: TextStyle(color: Colors.red)),

@@ -35,5 +35,6 @@ class LanguageProvider with ChangeNotifier {
     await prefs.setString('language', languageCode);
     _currentLanguage = languageCode;
     await _loadLocalizedStrings();
+    notifyListeners(); // Notify UI to rebuild
   }
 }
